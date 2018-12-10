@@ -59,10 +59,14 @@ class Polynom:
             for el in arr:
                 if not(el.isdigit()):
                     raise InvalidMults
-
         elif type(arr).__name__ == 'str':
             self.arr = get_arrs(arr)
             self.rate = len(self.arr) - 1
+        elif type(arr).__name__ == 'int':
+            self.arr = [arr]
+            self.rate = 0
+        else:
+            raise InvalidMults
 
     def __str__(self):
         res = ''
