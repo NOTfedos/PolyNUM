@@ -1,4 +1,5 @@
 import sys
+import PyQt5
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
 from pui import UI_MainWindow
 import polys

@@ -27,7 +27,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Введите многочлен</string>
+        <string>Многочлен</string>
        </property>
       </widget>
      </item>

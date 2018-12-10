@@ -18,71 +18,98 @@ def get_arrs(s):
     s = s.replace(' ', '')
     res = []
     for el in s:
-        if not (el.isdigit() or el == '^'):
+        if not (el.isdigit() or el == '^' or el == '+' or el == 'x'):
             raise InvalidMults
     arr = s.split('+')
     mults = []
     flag = False
     max_rate = 0
     for el in arr:
+        el = el.replace('x', '')
+
         if '^' in el:
             degr = el.split('^')
-            for i in range(len(mults)):
-                el = mults[i]
-                if el[1] == int(degr[1]):
-                    mults[0] += int(degr[0])
-                    flag = True
-                    break
-                if not flag:
-                    mults.append([int(degr[0]), int(degr[1])])
-            if int(degr[1]) > max_rate:
-                max_rate = int(degr[1])
+            if degr[0] == '':
+                degr[0] = '1'
         else:
-            for l in range(len(mults)):
-                el = mults[l]
-                if el[1] == 0:
-                    mults[l][0] += int(el)
-                    flag = True
-                    break
+            if el == '':
+                degr = ['1', '1']
+            if el.isdigit():
+                degr = [el, 0]
+
+        for i in range(len(mults)):
+            if mults[i][1] == int(degr[1]):
+                mults[i][0] += int(degr[0])
+                flag = True
+                break
+
+        if not flag:
+            mults.append([int(degr[0]), int(degr[1])])
+
+        flag = False
+
+        if int(degr[1]) > max_rate:
+            max_rate = int(degr[1])
+
     for i in range(max_rate + 1):
         res.append(get_elem(mults, max_rate - i))
 
     return res
 
 
-class Polynom:
-    def __init__(self, arr):
+def sum(s1, s2):
+    p1 = Polynom(s1)
+    p2 = Polynom(s2)
+    r = p1 + p2
+    return str(r)
 
-        if type(arr).__name__ == 'list':
-            self.arr = arr
-            self.rate = len(arr) - 1
-            for el in arr:
+
+def sub(s1, s2):
+    p1 = Polynom(s1)
+    p2 = Polynom(s2)
+    r = p1 - p2
+    return str(r)
+
+
+class Polynom:
+    def __init__(self, identifier):
+
+        if type(identifier).__name__ == 'list':
+            self.arr = identifier
+            self.rate = len(identifier) - 1
+            for el in identifier:
                 if not(el.isdigit()):
                     raise InvalidMults
-        elif type(arr).__name__ == 'str':
-            self.arr = get_arrs(arr)
+        elif type(identifier).__name__ == 'str':
+            self.arr = get_arrs(identifier)
             self.rate = len(self.arr) - 1
-        elif type(arr).__name__ == 'int':
-            self.arr = [arr]
+        elif type(identifier).__name__ == 'int':
+            self.arr = [identifier]
             self.rate = 0
+        elif type(identifier).__name__ == 'Polynom':
+            self.arr = identifier.arr
+            self.rate = identifier.rate
         else:
             raise InvalidMults
 
     def __str__(self):
-        res = ''
+        res = []
         for i in range(len(self.arr)):
-            el = self.arr[i]
-            if i == self.rate - 1:
-                if el == 0:
-                    res = res[:-3]
+            if self.arr[i] != 0:
+
+                if self.arr[i] == 1:
+                    m = ''
                 else:
-                    res += str(el)
-            elif i == self.rate - 2:
-                res += str(el) + 'x + '
-            else:
-                if el != 0:
-                    res += str(el) + 'x^' + str(i) + ' + '
-        return res
+                    m = str(self.arr[i])
+
+                if i < self.rate - 1:
+                    res.append(m + 'x^' + str(self.rate - i))
+                else:
+                    if i == self.rate - 1:
+                        res.append(m + 'x')
+                    elif i == self.rate :
+                        res.append(m)
+        return ' + '.join(res)
 
     def __add__(self, other):
         smults = self.arr[:]
