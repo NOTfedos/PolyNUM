@@ -2,6 +2,8 @@ import argparse
 import requests
 from PIL import Image
 
+VALID_SYMBOLS = '-+x^'
+
 
 class InvalidMults(BaseException):
     pass
@@ -16,34 +18,42 @@ def get_elem(arr, el):
 
 def get_arrs(s):
     s = s.replace(' ', '')
+    s = s.lower()
     res = []
-    for el in s:
-        if not (el.isdigit() or el == '^' or el == '+' or el == 'x'):
+    for j in range(len(s)):
+        el = s[j]
+        if not (el.isdigit() or (el in VALID_SYMBOLS)):
             raise InvalidMults
+    s = s.replace('-', '+-')
     arr = s.split('+')
     mults = []
     flag = False
     max_rate = 0
     for el in arr:
 
-        degr = [0, 0]
+        if el == '':
+            continue
+
+        degr = [0, 0]  # first - value, second - rank
 
         if '^' in el:
             el = el.replace('x', '')
             degr = el.split('^')
             if degr[0] == '':
                 degr[0] = '1'
-        else:
-            if 'x' in el:
+            if degr[0] == '-':
+                degr[0] = '-1'
+        else:  # if rank lower 2
+            if 'x' in el:  # if rank eq 1
                 degr[1] = '1'
-            else:
-                degr[0] = '0'
-            el = el.replace('x', '')
-            if el == '':
-                degr[0] = '1'
-            else:
+                el = el.replace('x', '')
+                if el == '':  # x
+                    degr[0] = '1'
+                else:
+                    degr[0] = el
+            else:  # if it's constant
+                degr[1] = '0'
                 degr[0] = el
-
         for i in range(len(mults)):
             if mults[i][1] == int(degr[1]):
                 mults[i][0] += int(degr[0])
@@ -76,6 +86,18 @@ def sub(s1, s2):
     p2 = Polynom(s2)
     r = p1 - p2
     return str(r)
+
+
+def mult(s1, s2):
+    return ''
+
+
+def div(s1, s2):
+    return ''
+
+
+def dxdy(s):
+    return ''
 
 
 class Polynom:
@@ -155,6 +177,23 @@ class Polynom:
             res = res[1:]
 
         return Polynom(res)
+
+    def calculate(self, x):
+        if self.rate == 0:
+            return self.arr[0]
+        else:
+            res = self.arr[0] * x + self.arr[1]
+            j = 1
+            for i in range(self.rate - 1):
+
+                try:
+                    a = self.arr[j + 1]
+                    j = j + 1
+                except BaseException:
+                    pass
+
+                res = res * x + a
+            return res
 
 
 def main():
