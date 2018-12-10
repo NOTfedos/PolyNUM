@@ -25,17 +25,24 @@ def get_arrs(s):
     flag = False
     max_rate = 0
     for el in arr:
-        el = el.replace('x', '')
+
+        degr = [0, 0]
 
         if '^' in el:
+            el = el.replace('x', '')
             degr = el.split('^')
             if degr[0] == '':
                 degr[0] = '1'
         else:
+            if 'x' in el:
+                degr[1] = '1'
+            else:
+                degr[0] = '0'
+            el = el.replace('x', '')
             if el == '':
-                degr = ['1', '1']
-            if el.isdigit():
-                degr = [el, 0]
+                degr[0] = '1'
+            else:
+                degr[0] = el
 
         for i in range(len(mults)):
             if mults[i][1] == int(degr[1]):
@@ -78,7 +85,9 @@ class Polynom:
             self.arr = identifier
             self.rate = len(identifier) - 1
             for el in identifier:
-                if not(el.isdigit()):
+                try:
+                    int(el)
+                except ValueError:
                     raise InvalidMults
         elif type(identifier).__name__ == 'str':
             self.arr = get_arrs(identifier)
@@ -107,8 +116,8 @@ class Polynom:
                 else:
                     if i == self.rate - 1:
                         res.append(m + 'x')
-                    elif i == self.rate :
-                        res.append(m)
+                    elif i == self.rate:
+                        res.append(str(self.arr[i]))
         return ' + '.join(res)
 
     def __add__(self, other):
@@ -122,7 +131,6 @@ class Polynom:
         else:
             for i in range(self.rate - other.rate):
                 omults = [0] + omults
-
         for i in range(max(self.rate, other.rate) + 1):
             res.append(smults[i] + omults[i])
 
