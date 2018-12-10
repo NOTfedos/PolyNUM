@@ -101,18 +101,41 @@ class Polynom:
 
         return Polynom(res)
 
+    def __sub__(self, other):
+        smults = self.arr[:]
+        omults = other.arr[:]
+        res = []
+
+        if other.rate > self.rate:
+            for i in range(other.rate - self.rate):
+                smults = [0] + smults
+        else:
+            for i in range(self.rate - other.rate):
+                omults = [0] + omults
+
+        for i in range(max(self.rate, other.rate) + 1):
+            res.append(smults[i] - omults[i])
+
+        while res[0] == 0:
+            res = res[1:]
+
+        return Polynom(res)
+
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--latex-name', '-lm', default='output.gif')
+    parser.add_argument('-o', default='output.gif')
     parser.add_argument('val')
     args = parser.parse_args()
     c = requests.get('http://latex.codecogs.com/gif.latex?', params=eval(args.val),
                      stream=True)
     img = Image.open(c.raw)
     img.show()
-    img.save(args.latex_name)
-    print(eval(args.val))
+    img.save(args.o)
+    try:
+        print(eval(args.val))
+    except InvalidMults:
+        print('Invalid command')
 
 
 if __name__ == '__main__':
