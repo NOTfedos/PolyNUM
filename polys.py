@@ -9,6 +9,11 @@ class InvalidMults(BaseException):
     pass
 
 
+def get_str(p):
+    polyn = Polynom(p)
+    return str(polyn)
+
+
 def get_elem(arr, el):
     for x in arr:
         if x[1] == el:
@@ -39,6 +44,8 @@ def get_arrs(s):
         if '^' in el:
             el = el.replace('x', '')
             degr = el.split('^')
+            if degr[1] == '':
+                raise InvalidMults
             if degr[0] == '':
                 degr[0] = '1'
             if degr[0] == '-':
@@ -74,7 +81,7 @@ def get_arrs(s):
     return res
 
 
-def sum(s1, s2):
+def sum_p(s1, s2):
     p1 = Polynom(s1)
     p2 = Polynom(s2)
     r = p1 + p2
@@ -89,7 +96,13 @@ def sub(s1, s2):
 
 
 def mult(s1, s2):
-    return ''
+    p1 = Polynom(s1)
+    p2 = Polynom(s2)
+    return str(p1 * p2)
+
+
+def get_calc(p, x):
+    return Polynom(p).calculate(x)
 
 
 def div(s1, s2):
@@ -112,7 +125,10 @@ class Polynom:
                 except ValueError:
                     raise InvalidMults
         elif type(identifier).__name__ == 'str':
-            self.arr = get_arrs(identifier)
+            try:
+                self.arr = get_arrs(identifier)
+            except InvalidMults:
+                self.arr = [0]
             self.rate = len(self.arr) - 1
         elif type(identifier).__name__ == 'int':
             self.arr = [identifier]
@@ -130,6 +146,8 @@ class Polynom:
 
                 if self.arr[i] == 1:
                     m = ''
+                elif self.arr[i] == -1:
+                    m = '-'
                 else:
                     m = str(self.arr[i])
 
@@ -195,11 +213,22 @@ class Polynom:
                 res = res * x + a
             return res
 
+    def __mul__(self, other):
+        res = []
+        for i in range(len(self.arr)):
+            x = self.arr[i]
+            for j in range(len(other.arr)):
+                y = other.arr[j]
+                res.append(str(x * y) + 'x^'
+                           + str(self.rate - i + other.rate - j))
+        s = ' + '.join(res)
+        return str(Polynom(s))
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', default='output.gif')
-    parser.add_argument('val')
+    parser.add_argument('val', nargs='*')
     args = parser.parse_args()
     c = requests.get('http://latex.codecogs.com/gif.latex?', params=eval(args.val),
                      stream=True)
@@ -207,7 +236,7 @@ def main():
     img.show()
     img.save(args.o)
     try:
-        print(eval(args.val))
+        print(eval(' '.join(args.val)))
     except InvalidMults:
         print('Invalid command')
 
