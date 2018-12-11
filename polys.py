@@ -21,7 +21,19 @@ def get_elem(arr, el):
     return 0
 
 
+def p_join(arr):
+    res = arr[0]
+    for i in range(1, len(arr)):
+        if arr[i][0] == '-':
+            res += ' - ' + str(arr[i][1:])
+        else:
+            res += ' + ' + str(arr[i])
+    return res
+
+
 def get_arrs(s):
+    if s == '':
+        return [0]
     s = s.replace(' ', '')
     s = s.lower()
     res = []
@@ -30,6 +42,7 @@ def get_arrs(s):
         if not (el.isdigit() or (el in VALID_SYMBOLS)):
             raise InvalidMults
     s = s.replace('-', '+-')
+    s = s.replace('**', '^')
     arr = s.split('+')
     mults = []
     flag = False
@@ -158,7 +171,7 @@ class Polynom:
                         res.append(m + 'x')
                     elif i == self.rate:
                         res.append(str(self.arr[i]))
-        return ' + '.join(res)
+        return p_join(res)
 
     def __add__(self, other):
         smults = self.arr[:]
@@ -225,18 +238,23 @@ class Polynom:
         return str(Polynom(s))
 
 
+def get_pict(p, path):
+    c = requests.get('http://latex.codecogs.com/gif.latex?',
+                     params=p, stream=True)
+    img = Image.open(c.raw)
+    img.save(path)
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', default='output.gif')
-    parser.add_argument('val', nargs='*')
+    parser.add_argument('-o', default='output.png')
+    parser.add_argument('val', nargs='*', default='')
     args = parser.parse_args()
-    c = requests.get('http://latex.codecogs.com/gif.latex?', params=eval(args.val),
-                     stream=True)
-    img = Image.open(c.raw)
-    img.show()
-    img.save(args.o)
+    s = ' '.join(args.val)
+    s = s.replace('**', '^')
+    get_pict(eval(s), args.o)
     try:
-        print(eval(' '.join(args.val)))
+        print(eval(s))
     except InvalidMults:
         print('Invalid command')
 

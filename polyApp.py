@@ -1,10 +1,13 @@
 import sys
 import PyQt5
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QInputDialog
+from PyQt5.QtGui import QPixmap
 from pui import Ui_MainWindow
 import polys
 from polys import InvalidMults
 
+
+IMAGE_PATH = 'polynom_image.png'
 
 class PolyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -17,11 +20,27 @@ class PolyWidget(QMainWindow, Ui_MainWindow):
         self.btn_dxdy.clicked.connect(self.dxdy_clicked)
         self.btn_eq.clicked.connect(self.eq_clicked)
         self.btn_calculate.clicked.connect(self.pol_calc)
+        self.btn_save_pict.clicked.connect(self.save_pict)
         self.cur_proc = self.to_str
         self.arg = ['', '']
 
     def to_str(self, p_args):
-        self.line_polynom.setText(polys.get_str(p_args[1]))
+        try:
+            self.line_polynom.setText(polys.get_str(p_args[1]))
+            polys.get_pict(polys.get_str(self.arg[1]), IMAGE_PATH)
+            self.poly_formula.setPixmap(QPixmap(IMAGE_PATH))
+        except InvalidMults:
+            pass
+
+    def save_pict(self):
+        path, okBtnPressed = QInputDialog.getText(self, '',
+                                                  'Введите название файла')
+        if okBtnPressed:
+            s = self.line_polynom.text()
+            try:
+                polys.get_pict(polys.get_str(s), path)
+            except InvalidMults:
+                polys.get_pict(s, path)
 
     def sum_clicked(self):
         self.arg = [self.line_polynom.text(), '']
@@ -29,6 +48,8 @@ class PolyWidget(QMainWindow, Ui_MainWindow):
         self.line_polynom.setText('')
         try:
             self.last_polynom.setText(polys.get_str(self.arg[0]))
+            polys.get_pict(polys.get_str(self.arg[0]), IMAGE_PATH)
+            self.poly_formula.setPixmap(QPixmap(IMAGE_PATH))
         except InvalidMults:
             pass
 
@@ -40,6 +61,8 @@ class PolyWidget(QMainWindow, Ui_MainWindow):
             p = polys.sum_p(pol1, pol2)
             self.line_polynom.setText(p)
             self.last_polynom.setText(p)
+            polys.get_pict(p, IMAGE_PATH)
+            self.poly_formula.setPixmap(QPixmap(IMAGE_PATH))
         except InvalidMults:
             self.line_polynom.setText('Неверно введен(ы) многочлен(ы)')
 
@@ -49,6 +72,8 @@ class PolyWidget(QMainWindow, Ui_MainWindow):
         self.line_polynom.setText('')
         try:
             self.last_polynom.setText(polys.get_str(self.arg[0]))
+            polys.get_pict(polys.get_str(self.arg[0]), IMAGE_PATH)
+            self.poly_formula.setPixmap(QPixmap(IMAGE_PATH))
         except InvalidMults:
             pass
 
@@ -60,6 +85,8 @@ class PolyWidget(QMainWindow, Ui_MainWindow):
             p = polys.sub(pol1, pol2)
             self.line_polynom.setText(p)
             self.last_polynom.setText(p)
+            polys.get_pict(p, IMAGE_PATH)
+            self.poly_formula.setPixmap(QPixmap(IMAGE_PATH))
         except InvalidMults:
             self.line_polynom.setText('Неверно введен(ы) многочлен(ы)')
 
@@ -69,6 +96,8 @@ class PolyWidget(QMainWindow, Ui_MainWindow):
         self.line_polynom.setText('')
         try:
             self.last_polynom.setText(polys.get_str(self.arg[0]))
+            polys.get_pict(polys.get_str(self.arg[0]), IMAGE_PATH)
+            self.poly_formula.setPixmap(QPixmap(IMAGE_PATH))
         except InvalidMults:
             pass
 
@@ -80,6 +109,8 @@ class PolyWidget(QMainWindow, Ui_MainWindow):
             p = polys.mult(pol1, pol2)
             self.line_polynom.setText(p)
             self.last_polynom.setText(p)
+            polys.get_pict(p, IMAGE_PATH)
+            self.poly_formula.setPixmap(QPixmap(IMAGE_PATH))
         except InvalidMults:
             self.line_polynom.setText('Неверно введен(ы) многочлен(ы)')
 
