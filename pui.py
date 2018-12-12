@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'untitled.ui'
+# Form implementation generated from reading ui file 'poly_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -121,7 +121,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "PolyNUM"))
         self.label.setText(_translate("MainWindow", "Многочлен"))
         self.btn_sum.setText(_translate("MainWindow", "+"))
         self.btn_sub.setText(_translate("MainWindow", "-"))
