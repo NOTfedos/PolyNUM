@@ -2,7 +2,7 @@ import argparse
 import requests
 from PIL import Image
 
-VALID_SYMBOLS = '-+x^'
+VALID_SYMBOLS = '-+x^*'
 
 
 class InvalidMults(BaseException):
@@ -43,6 +43,7 @@ def get_arrs(s):
             raise InvalidMults
     s = s.replace('-', '+-')
     s = s.replace('**', '^')
+    s = s.replace('*', '')
     arr = s.split('+')
     mults = []
     flag = False
@@ -154,6 +155,8 @@ class Polynom:
 
     def __str__(self):
         res = []
+        if self.arr == [0]:
+            return ''
         for i in range(len(self.arr)):
             if self.arr[i] != 0:
 
@@ -239,6 +242,8 @@ class Polynom:
 
 
 def get_pict(p, path):
+    if p == '':
+        return
     c = requests.get('http://latex.codecogs.com/gif.latex?',
                      params=p, stream=True)
     img = Image.open(c.raw)

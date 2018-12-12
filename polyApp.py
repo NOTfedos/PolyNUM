@@ -9,6 +9,7 @@ from polys import InvalidMults
 
 IMAGE_PATH = 'polynom_image.png'
 
+
 class PolyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
